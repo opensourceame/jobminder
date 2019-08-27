@@ -34,19 +34,26 @@ module JobMinder
 
         @stop_time = Time.now
 
-        update_job_log(:complete)
+        update_job_log(status: :complete)
 
         at_exit do
           process_lock.unset
         end
       end
-    # rescue
-    #   binding.pry
-    #   process_lock.unset
-    #
-    #   job_log.update(status: :failed)
-    #
-    #   raise
+
+    rescue
+
+      @stop_time = Time.now
+      binding.pry
+      process_lock.unset if @process_lock
+
+      job_log.update(status: :failed)
+
+      raise
+    end
+
+    def log(name, datum)
+      job_log.result[:name] = datum
     end
 
     def process_lock
@@ -76,11 +83,16 @@ module JobMinder
           )
     end
 
-    def update_job_log(status)
-      job_log.update(
-          status:    status,
+    def update_job_log(**options)
+      attributes = {
           stop_time: Time.now,
           results:   @results,
+      }
+
+      attributes.merge!(options) if options.is_a?(Hash)
+
+      job_log.update(
+          status: status,
       )
     end
 

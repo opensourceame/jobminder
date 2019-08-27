@@ -5,9 +5,21 @@ module JobMinder
       @@lock_dir = '/tmp'
 
       def set
-        ::File.write("#{@@lock_dir}/#{@@lock_prefix}_#{name}", Time.now)
+        ::File.write(lock_file_name, Time.now)
 
         binding.pry
+      end
+
+      def unset
+        ::File.delete(lock_file_name)
+      end
+
+      def is_set?
+        ::File.exists?(lock_file_name)
+      end
+
+      def lock_file_name
+        "#{@@lock_dir}/#{@@lock_prefix}_#{name}.lock"
       end
     end
   end

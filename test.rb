@@ -30,9 +30,12 @@ DB = Sequel.sqlite('test.db')
 require_relative 'lib/job_minder'
 
 
-my_job = JobMinder.new_job(:something) do |job|
+my_job = JobMinder.new_job(:something, process_lock: true) do |job|
 
   puts 'do something'
+
+  job.log(:blah, 1)
+  job.log(:outcome, 123)
 
   binding.pry
 
