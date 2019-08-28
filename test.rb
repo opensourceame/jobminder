@@ -3,7 +3,7 @@
 require 'bundler/setup'
 require 'pry'
 require 'sequel'
-
+require 'mysql2'
 require "sqlite3"
 
 unless File.exists?('test.db')
@@ -19,26 +19,26 @@ unless File.exists?('test.db')
       start_time datetime,
       stop_time  datetime,
       status varchar(20),
-      results varchar
+      data varchar
     );
   SQL
 end
 
 # DB = Sequel.connect('sqlite3://test.db')
-DB = Sequel.sqlite('test.db')
+# DB = Sequel.sqlite('test.db')
+#
+#
+DB = Sequel.connect('mysql2://root@localhost/trading')
 
 require_relative 'lib/job_minder'
 
+Pry.start
 
-my_job = JobMinder.new_job(:something, process_lock: true) do |job|
+my_job = JobMinder::Job.new(:something) do |job|
 
   puts 'do something'
 
-  job.log(:blah, 1)
-  job.log(:outcome, 123)
-
-  binding.pry
+  job.data.blah = 1
+  job.data.something_else = 1
 
 end
-
-Pry.start

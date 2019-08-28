@@ -13,5 +13,7 @@
 # RubyMine
 
 .idea
-.idaa/*
+.idea/*
 .rakeTasks
+
+test.db

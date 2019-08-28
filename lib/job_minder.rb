@@ -9,10 +9,6 @@ module JobMinder
 
   @@lock_type = :file
 
-  def self.new_job(name, **options)
-    Job.new(name, options)
-  end
-
   def self.lock_type
     @@lock_type
   end

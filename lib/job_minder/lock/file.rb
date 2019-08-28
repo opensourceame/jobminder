@@ -6,8 +6,6 @@ module JobMinder
 
       def set
         ::File.write(lock_file_name, Time.now)
-
-        binding.pry
       end
 
       def unset

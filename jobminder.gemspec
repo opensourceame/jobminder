@@ -1,7 +1,9 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "job_minder/version"
+# require "job_minder/version"
+
+require_relative 'lib/job_minder'
 
 Gem::Specification.new do |spec|
   spec.name          = "jobminder"
@@ -36,10 +38,13 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "json"
+
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "sqlite3"
+  spec.add_development_dependency "mysql2"
   spec.add_development_dependency "sequel"
   # spec.add_development_dependency "sequel_sqlite3"
   spec.add_development_dependency "factory_bot"
