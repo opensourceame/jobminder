@@ -1,4 +1,4 @@
-class JobMinder::Log < Sequel::Model(:jobminder_logs)
+class JobMinder::LogSequel < Sequel::Model(:jobminder_logs)
 
   def before_save
     self[:data]   = Hash.new(@data).to_json
