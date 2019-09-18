@@ -11,6 +11,13 @@ module JobMinder
     @@lock_prefix = 'job'
 
     def initialize(name, **options)
+
+      at_exit do
+        unset_process_lock
+
+        update_job_log(status: :failed) if @job_log && @job_log.status.to_sym != :complete
+      end
+
       @name       = JobMinder.normalize_text(name)
       @status     = :started
       @config     = OpenStruct.new(options)
@@ -37,10 +44,6 @@ module JobMinder
 
       update_job_log(status: :complete, stop_time: stop_time) if @job_log
 
-      at_exit do
-        unset_process_lock
-      end
-
     rescue
 
       @stop_time = Time.now
@@ -57,7 +60,7 @@ module JobMinder
     end
 
     def log(name, datum)
-      job_log.data[:name] = datum
+      job_log.data[name] = datum
     end
 
     def data
@@ -66,6 +69,10 @@ module JobMinder
 
     def params
       job_log.params
+    end
+
+    def params=(data)
+      job_log.params = data
     end
 
     def process_lock
@@ -88,24 +95,25 @@ module JobMinder
     def create_job_log
 
       @job_log =
-          ::JobMinder::Log.create(
-              name:       name,
-              status:     status,
-              start_time: start_time,
-          )
+        ::JobMinder::Log.create(
+          name:       name,
+          status:     status,
+          start_time: start_time,
+        )
     end
 
     def update_job_log(**options)
       attributes = {
-          stop_time: Time.now,
+        stop_time: Time.now,
       }
 
       attributes.merge!(options) if options.is_a?(Hash)
 
-      job_log.update(attributes)
+      job_log.set(attributes)
+      job_log.save
     end
 
-private
+    private
 
     def normalize_text(input)
       return '' if input.nil?

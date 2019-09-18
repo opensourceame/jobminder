@@ -1,16 +1,34 @@
 class JobMinder::LogSequel < Sequel::Model(:jobminder_logs)
 
-  def before_save
-    self[:data]   = Hash.new(@data).to_json
-    self[:params] = Hash.new(@params).to_json
+  plugin :defaults_setter
+
+  # plugin :serialization, :struct, :data
+  # plugin :serialization, :struct, :params
+
+  plugin :serialization, :json, :data
+  plugin :serialization, :json, :params
+
+  # default_values[:data]   = OpenStruct.new
+  # default_values[:params] = OpenStruct.new
+
+  # def before_save
+  #   self[:data]   = @data.to_h.to_json
+  #   self[:params] = @params.to_h.to_json
+  # end
+
+  # def after_initialize
+  #   @params ||= OpenStruct.new(field_to_h(:params))
+  #   @data   ||= OpenStruct.new(field_to_h(:data))
+  #   binding.pry
+  # end
+  #
+
+
+  def field_to_h(field)
+    return {} if self[field.to_sym].nil?
+
+    JSON.load(self[field.to_sym])
   end
 
-  def params
-    @params ||= OpenStruct.new(self[:params].nil? ? {} : JSON.load(self[:params]))
-  end
-  
-  def data
-    @data ||= OpenStruct.new(self[:data].nil? ? {} : JSON.load(self[:data]))
-  end
-  
 end
+

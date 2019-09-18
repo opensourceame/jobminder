@@ -38,6 +38,21 @@ end
 
 ```
 
+
+## Advanced Usage
+
+```ruby
+
+JobMinder::Job.new(:a_quick_job,
+                    process_lock: :file) do |job|
+  
+  puts "run something"
+
+  job.result.
+end
+
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
